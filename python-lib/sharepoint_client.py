@@ -13,6 +13,7 @@ class SharePointClient():
 
     def __init__(self, config):
         login_details = config.get('sharepoint_local')
+        self.assert_login_details(DSS_LOCAL_DETAILS, login_details)
         username = login_details['sharepoint_username']
         password = login_details['sharepoint_password']
         self.sharepoint_url = login_details['sharepoint_host']
@@ -229,6 +230,13 @@ class SharePointClient():
 
     def get_file_add_url(self, full_path, file_name):
         return self.get_folder_url(full_path) + "/Files/add(url='{}',overwrite=true)".format(file_name)
+
+    def assert_login_details(self, required_keys, login_details):
+        if login_details is None or login_details == {}:
+            raise Exception("Login details are empty")
+        for key in required_keys:
+            if key not in login_details.keys():
+                raise Exception(required_keys[key])
 
 class SharePointSession():
 

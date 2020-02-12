@@ -10,3 +10,9 @@ DSS_LAST_MODIFIED = 'lastModified'
 DSS_CHILDREN = 'children'
 AUTH_OAUTH = "oauth"
 AUTH_LOGIN = "login"
+DSS_LOCAL_DETAILS = {
+    "sharepoint_username" : "The account's username is missing",
+    "sharepoint_password" : "The account's password is missing",
+    "sharepoint_host" : "The SharePoint host address is missing",
+    "sharepoint_site" : "The site name is missing"
+}
