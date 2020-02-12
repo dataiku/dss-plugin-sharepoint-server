@@ -1,0 +1,15 @@
+{
+    "meta": {
+        "label": "Shared Documents",
+        "description": "Read/write shared documents from/to your SharePoint server",
+        "icon": "icon-file-alt"
+    },
+    "params": [
+        {
+            "name": "sharepoint_local",
+            "label": "SharePoint preset",
+            "type": "PRESET",
+            "parameterSetId": "sharepoint-local-login"
+        }
+    ]
+}
