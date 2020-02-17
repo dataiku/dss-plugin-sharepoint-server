@@ -30,10 +30,14 @@ class SharePointClient():
         self.sharepoint_list_title = config.get("sharepoint_list_title")
 
     def get_folders(self, path):
-        return self.session.get(self.get_sharepoint_item_url(path) + "/Folders" ).json()
+        response = self.session.get(self.get_sharepoint_item_url(path) + "/Folders" )
+        self.assert_response_ok(response)
+        return response.json()
 
     def get_files(self, path):
-        return self.session.get(self.get_sharepoint_item_url(path) + "/Files" ).json()
+        response = self.session.get(self.get_sharepoint_item_url(path) + "/Files" )
+        self.assert_response_ok(response)
+        return response.json()
 
     def get_sharepoint_item_url(self, path):
         URL_STRUCTURE = "{0}/sites/{1}/_api/Web/GetFolderByServerRelativeUrl('/sites/{1}/Shared%20Documents{2}')"
@@ -45,6 +49,7 @@ class SharePointClient():
         response = self.session.get(
             self.get_file_content_url(full_path)
         )
+        self.assert_response_ok(response)
         return response
 
     def write_file_content(self, full_path, data):
@@ -60,6 +65,7 @@ class SharePointClient():
             headers=headers,
             data=data
         )
+        self.assert_response_ok(response)
         return response
 
     def create_folder(self, full_path):
@@ -75,25 +81,28 @@ class SharePointClient():
                 full_to_path
             )
         )
+        self.assert_response_ok(response)
         return response.json()
 
     def delete_file(self, full_path):
         headers = {
             "X-HTTP-Method":"DELETE"
         }
-        self.session.post(
+        response = self.session.post(
             self.get_file_url(full_path),
             headers = headers
         )
+        self.assert_response_ok(response)
 
     def delete_folder(self, full_path):
         headers = {
             "X-HTTP-Method":"DELETE"
         }
-        self.session.post(
+        response = self.session.post(
             self.get_folder_url(full_path),
             headers = headers
         )
+        self.assert_response_ok(response)
 
     def get_list_fields(self, list_title):
         url = self.get_list_fields_url(list_title)
@@ -113,8 +122,9 @@ class SharePointClient():
     def get_list_items(self, list_title):
         response = self.session.get(
             self.get_list_items_url(list_title)
-        ).json()
-        return response
+        )
+        self.assert_response_ok(response)
+        return response.json()
 
     def create_list(self, list_name):
         headers={
@@ -135,6 +145,7 @@ class SharePointClient():
             headers=headers,
             json=data
         )
+        self.assert_response_ok(response)
         return response
 
     def delete_list(self, list_name):
@@ -149,21 +160,22 @@ class SharePointClient():
         return response
 
     def create_custom_field(self, list_title, field_title):
-            body = {
-                'parameters' : {
-                    '__metadata': { 'type': 'SP.XmlSchemaFieldCreationInformation' },
-                    'SchemaXml':"<Field DisplayName='{0}' Format='Dropdown' MaxLength='255' Name='{0}' Title='{0}' Type='Text'></Field>".format(field_title)
-                }
+        body = {
+            'parameters' : {
+                '__metadata': { 'type': 'SP.XmlSchemaFieldCreationInformation' },
+                'SchemaXml':"<Field DisplayName='{0}' Format='Dropdown' MaxLength='255' Name='{0}' Title='{0}' Type='Text'></Field>".format(field_title)
             }
-            headers = {
-                "content-type": APPLICATION_JSON
-            }
-            response = self.session.post(
-                self.get_lists_add_field_url(list_title),
-                headers = headers,
-                json=body
-            )
-            return response
+        }
+        headers = {
+            "content-type": APPLICATION_JSON
+        }
+        response = self.session.post(
+            self.get_lists_add_field_url(list_title),
+            headers = headers,
+            json=body
+        )
+        self.assert_response_ok(response)
+        return response
 
     def add_list_item(self, list_title, item):
         item["__metadata"] = {
@@ -177,6 +189,7 @@ class SharePointClient():
             json=item,
             headers=headers
         )
+        self.assert_response_ok(response)
         return response
 
     def get_base_url(self):
@@ -238,6 +251,13 @@ class SharePointClient():
             if key not in login_details.keys():
                 raise Exception(required_keys[key])
 
+    def assert_response_ok(self, response):
+        status_code = response.status_code
+        if status_code == 404:
+            raise Exception("Not found. Please check tenant or site name.")
+        if status_code == 403:
+            raise Exception("Forbidden. Please check your account credentials.")
+
 class SharePointSession():
 
     def __init__(self, sharepoint_user_name, sharepoint_password, sharepoint_tenant, sharepoint_site, sharepoint_access_token = None):
@@ -276,8 +296,7 @@ class LocalSharePointSession():
     def post(self, url, headers = {}, json=None, data=None):
         headers["accept"] = APPLICATION_JSON
         headers["X-RequestDigest"] = self.get_form_digest_value()
-        ret = requests.post(url, headers = headers, json=json, data=data, auth=self.auth)
-        return ret
+        return requests.post(url, headers = headers, json=json, data=data, auth=self.auth)
 
     def get_form_digest_value(self):
         if self.form_digest_value is not None:
