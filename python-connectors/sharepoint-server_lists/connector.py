@@ -31,7 +31,7 @@ class SharePointListsConnector(Connector):
         columns = []
         self.columns={}
         for column in result_loop(response):
-            if column[SHAREPOINT_HIDDEN_COLUMN] == False and column[SHAREPOINT_READ_ONLY_FIELD]==False:
+            if column[SHAREPOINT_HIDDEN_COLUMN] == False and column[SHAREPOINT_READ_ONLY_FIELD] == False:
                 sharepoint_type = get_dss_types(column[SHAREPOINT_TYPE_AS_STRING])
                 if sharepoint_type is not None:
                     columns.append({

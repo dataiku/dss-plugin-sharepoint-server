@@ -14,20 +14,32 @@ class SharePointClient():
     def __init__(self, config):
         login_details = config.get('sharepoint_local')
         self.assert_login_details(DSS_LOCAL_DETAILS, login_details)
+        self.setup_login_details(login_details)
         username = login_details['sharepoint_username']
         password = login_details['sharepoint_password']
         self.sharepoint_url = login_details['sharepoint_host']
         self.sharepoint_tenant = login_details['sharepoint_host']
         self.sharepoint_origin = login_details['sharepoint_host']
-        self.sharepoint_site = login_details['sharepoint_site']
         self.session = LocalSharePointSession(
             username,
             password,
             self.sharepoint_origin,
+            self.sharepoint_type,
             self.sharepoint_site,
             sharepoint_access_token = None
         )
         self.sharepoint_list_title = config.get("sharepoint_list_title")
+
+    def setup_login_details(self, login_details):
+        if 'sharepoint_type' in login_details:
+            self.sharepoint_type = login_details['sharepoint_type']
+        else:
+            self.sharepoint_type = "sites"
+        self.sharepoint_site = login_details['sharepoint_site']
+        if 'sharepoint_root' in login_details:
+            self.sharepoint_root = login_details['sharepoint_root'].strip("/")
+        else:
+            self.sharepoint_root = "Shared Documents"
 
     def get_folders(self, path):
         response = self.session.get(self.get_sharepoint_item_url(path) + "/Folders" )
@@ -40,10 +52,10 @@ class SharePointClient():
         return response.json()
 
     def get_sharepoint_item_url(self, path):
-        URL_STRUCTURE = "{0}/sites/{1}/_api/Web/GetFolderByServerRelativeUrl('/sites/{1}/Shared%20Documents{2}')"
+        URL_STRUCTURE = "{0}/{3}/{1}/_api/Web/GetFolderByServerRelativeUrl('/{3}/{1}/Shared%20Documents{2}')"
         if path == '/':
             path = ""
-        return URL_STRUCTURE.format(self.sharepoint_origin, self.sharepoint_site, path)
+        return URL_STRUCTURE.format(self.sharepoint_origin, self.sharepoint_site, path, self.sharepoint_type)
 
     def get_file_content(self, full_path):
         response = self.session.get(
@@ -193,8 +205,8 @@ class SharePointClient():
         return response
 
     def get_base_url(self):
-        return "{}/sites/{}/_api/Web".format(
-            self.sharepoint_origin, self.sharepoint_site
+        return "{}/{}/{}/_api/Web".format(
+            self.sharepoint_origin, self.sharepoint_type, self.sharepoint_site
         )
 
     def get_lists_url(self):
@@ -210,7 +222,8 @@ class SharePointClient():
         return self.get_lists_by_title_url(list_title) + "/fields"
 
     def get_lists_add_field_url(self, list_title):
-        return self.get_base_url() + "/GetList(@a1)/Fields/CreateFieldAsXml?@a1='/sites/{}/Lists/{}'".format(
+        return self.get_base_url() + "/GetList(@a1)/Fields/CreateFieldAsXml?@a1='/{}/{}/Lists/{}'".format(
+            self.sharepoint_type,
             self.sharepoint_site,
             list_title
         )
@@ -234,7 +247,7 @@ class SharePointClient():
         )
 
     def get_site_path(self, full_path):
-        return "'/sites/{}/Shared%20Documents{}'".format(self.sharepoint_site, full_path)
+        return "'/{}/{}/Shared%20Documents{}'".format(self.sharepoint_type, self.sharepoint_site, full_path)
 
     def get_add_folder_url(self, full_path):
         return self.get_base_url() + "/Folders/add('Shared%20Documents/{}')".format(
@@ -254,7 +267,7 @@ class SharePointClient():
     def assert_response_ok(self, response):
         status_code = response.status_code
         if status_code == 404:
-            raise Exception("Not found. Please check tenant or site name.")
+            raise Exception("Not found. Please check tenant, site type or site name.")
         if status_code == 403:
             raise Exception("Forbidden. Please check your account credentials.")
 
@@ -280,9 +293,10 @@ class SharePointSession():
 
 class LocalSharePointSession():
 
-    def __init__(self, sharepoint_user_name, sharepoint_password, sharepoint_origin, sharepoint_site, sharepoint_access_token = None):
+    def __init__(self, sharepoint_user_name, sharepoint_password, sharepoint_origin, sharepoint_type, sharepoint_site, sharepoint_access_token = None):
         self.form_digest_value = None
         self.sharepoint_origin = sharepoint_origin
+        self.sharepoint_type = sharepoint_type
         self.sharepoint_site = sharepoint_site
         self.sharepoint_access_token = sharepoint_access_token
         self.sharepoint_user_name = sharepoint_user_name
@@ -310,6 +324,6 @@ class LocalSharePointSession():
             return self.form_digest_value
 
     def get_context_info_url(self):
-        return "{}/sites/{}/_api/contextinfo".format(
-            self.sharepoint_origin, self.sharepoint_site
+        return "{}/{}/{}/_api/contextinfo".format(
+            self.sharepoint_origin, self.sharepoint_type, self.sharepoint_site
         )
