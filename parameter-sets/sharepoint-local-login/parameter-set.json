@@ -48,6 +48,13 @@
             "mandatory": true
         },
         {
+            "name": "sharepoint_root",
+            "label": "Root directory",
+            "type": "STRING",
+            "description": "",
+            "defaultValue": "Shared Documents"
+        },
+        {
             "name": "sharepoint_username",
             "label": "Username",
             "type": "STRING",

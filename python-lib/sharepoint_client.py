@@ -10,6 +10,9 @@ from dss_constants import DSSConstants
 class SharePointClient():
 
     def __init__(self, config):
+        self.sharepoint_type = None
+        self.sharepoint_site = None
+        self.sharepoint_root = None
         login_details = config.get('sharepoint_local')
         self.assert_login_details(DSSConstants.LOCAL_DETAILS, login_details)
         self.setup_login_details(login_details)
@@ -50,10 +53,15 @@ class SharePointClient():
         return response.json()
 
     def get_sharepoint_item_url(self, path):
-        URL_STRUCTURE = "{0}/{3}/{1}/_api/Web/GetFolderByServerRelativeUrl('/{3}/{1}/Shared%20Documents{2}')"
         if path == '/':
             path = ""
-        return URL_STRUCTURE.format(self.sharepoint_origin, self.sharepoint_site, path, self.sharepoint_type)
+        return SharePointConstants.GET_FOLDER_URL_STRUCTURE.format(
+            self.sharepoint_origin,
+            self.sharepoint_site,
+            path,
+            self.sharepoint_type,
+            self.sharepoint_root
+        )
 
     def get_file_content(self, full_path):
         response = self.session.get(
