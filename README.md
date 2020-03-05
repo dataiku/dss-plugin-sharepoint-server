@@ -15,4 +15,4 @@ This plugin is distributed under the Apache License version 2.0
 - In your DSS project flow, select **Dataset > SharePoint**
 - Click **Shared Documents** or **Lists**, according to the data source you are trying to sync DSS to.
 -  Pick the authentication type and the preset, and browse to the document or folder you want to use as dataset. If the source is a list, you will have know its name beforehand.
-![Brose to dataset path](images/sharepoint-fs-dataset.png)
+![Browse to dataset path](images/sharepoint-fs-dataset.png)
