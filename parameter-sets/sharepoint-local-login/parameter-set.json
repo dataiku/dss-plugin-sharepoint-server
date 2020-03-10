@@ -16,17 +16,10 @@
             "mandatory": true
         },
         {
-            "name": "sharepoint_type",
-            "label": "Type of SharePoint",
-            "type": "STRING",
-            "defaultValue": "sites",
-            "mandatory": true
-        },
-        {
             "name": "sharepoint_site",
-            "label": "Site / Team",
+            "label": "Site",
             "type": "STRING",
-            "description": "site/subsite...",
+            "description": "sites/site_name/subsite...",
             "mandatory": true
         },
         {
