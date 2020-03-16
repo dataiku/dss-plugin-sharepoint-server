@@ -18,6 +18,10 @@ class SharePointClient():
         username = login_details['sharepoint_username']
         password = login_details['sharepoint_password']
         self.sharepoint_url = login_details['sharepoint_host']
+        if 'ignore_ssl_check' in login_details:
+            self.ignore_ssl_check = login_details['ignore_ssl_check']
+        else:
+            self.ignore_ssl_check = False
         self.sharepoint_tenant = login_details['sharepoint_host']
         self.sharepoint_origin = login_details['sharepoint_host']
         self.session = LocalSharePointSession(
@@ -25,7 +29,8 @@ class SharePointClient():
             password,
             self.sharepoint_origin,
             self.sharepoint_site,
-            sharepoint_access_token=None
+            sharepoint_access_token=None,
+            ignore_ssl_check=self.ignore_ssl_check
         )
         self.sharepoint_list_title = config.get("sharepoint_list_title")
 
@@ -109,11 +114,10 @@ class SharePointClient():
         headers = {
             "X-HTTP-Method": "DELETE"
         }
-        response = self.session.post(
+        self.session.post(
             self.get_folder_url(full_path),
             headers=headers
         )
-        self.assert_response_ok(response)
 
     def get_list_fields(self, list_title):
         url = self.get_list_fields_url(list_title)
@@ -305,10 +309,11 @@ class SharePointSession():
 
 class LocalSharePointSession():
 
-    def __init__(self, sharepoint_user_name, sharepoint_password, sharepoint_origin, sharepoint_site, sharepoint_access_token=None):
+    def __init__(self, sharepoint_user_name, sharepoint_password, sharepoint_origin, sharepoint_site, sharepoint_access_token=None, ignore_ssl_check=False):
         self.form_digest_value = None
         self.sharepoint_origin = sharepoint_origin
         self.sharepoint_site = sharepoint_site
+        self.ignore_ssl_check = ignore_ssl_check
         self.sharepoint_access_token = sharepoint_access_token
         self.sharepoint_user_name = sharepoint_user_name
         self.sharepoint_password = sharepoint_password
@@ -316,12 +321,26 @@ class LocalSharePointSession():
 
     def get(self, url, headers={}):
         headers["accept"] = DSSConstants.APPLICATION_JSON
-        return requests.get(url, headers=headers, auth=self.auth)
+        args = {
+            "headers": headers,
+            "auth": self.auth
+        }
+        if self.ignore_ssl_check is True:
+            args["verify"] = False
+        return requests.get(url, **args)
 
     def post(self, url, headers={}, json=None, data=None):
         headers["accept"] = DSSConstants.APPLICATION_JSON
         headers["X-RequestDigest"] = self.get_form_digest_value()
-        return requests.post(url, headers=headers, json=json, data=data, auth=self.auth)
+        args = {
+            "headers": headers,
+            "json": json,
+            "data": data,
+            "auth": self.auth
+        }
+        if self.ignore_ssl_check is True:
+            args["verify"] = False
+        return requests.post(url, **args)
 
     def get_form_digest_value(self):
         if self.form_digest_value is not None:

@@ -16,6 +16,13 @@
             "mandatory": true
         },
         {
+            "name": "ignore_ssl_check",
+            "label": "Ignore SSL check",
+            "type": "BOOLEAN",
+            "description": "",
+            "defaultValue": false
+        },
+        {
             "name": "sharepoint_site",
             "label": "Site path",
             "type": "STRING",
