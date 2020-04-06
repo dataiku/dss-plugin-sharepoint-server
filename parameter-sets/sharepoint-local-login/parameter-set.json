@@ -1,0 +1,54 @@
+{
+    "meta": {
+        "label": "SharePoint 2016 login",
+        "description": "",
+        "icon": "icon-file-alt"
+    },
+    "defaultDefinableInline": true,
+    "defaultDefinableAtProjectLevel": true,
+    "pluginParams": [],
+    "params": [
+        {
+            "name": "sharepoint_host",
+            "label": "Host",
+            "type": "STRING",
+            "description": "Sharepoint host address",
+            "mandatory": true
+        },
+        {
+            "name": "ignore_ssl_check",
+            "label": "Ignore SSL check",
+            "type": "BOOLEAN",
+            "description": "",
+            "defaultValue": false
+        },
+        {
+            "name": "sharepoint_site",
+            "label": "Site path",
+            "type": "STRING",
+            "description": "sites/site_name/subsite...",
+            "mandatory": true
+        },
+        {
+            "name": "sharepoint_root",
+            "label": "Root directory",
+            "type": "STRING",
+            "description": "",
+            "defaultValue": "Shared Documents"
+        },
+        {
+            "name": "sharepoint_username",
+            "label": "Username",
+            "type": "STRING",
+            "description": "DOMAIN\\username",
+            "mandatory": true
+        },
+        {
+            "name": "sharepoint_password",
+            "label": "Password",
+            "type": "PASSWORD",
+            "description": "",
+            "mandatory": true
+        }
+    ]
+}
