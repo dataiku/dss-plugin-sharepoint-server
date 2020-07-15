@@ -23,9 +23,9 @@ Say a typical URL for files you want to give access to is `https://sharepoint.da
 -  Pick the authentication type and the preset, and browse to the document or folder you want to use as dataset. If the source is a list, you will have know its name beforehand.
 ![Browse to dataset path](images/sharepoint-fs-dataset.png)
 
-### Export data back to Sharepoint
+### Export data back to SharePoint
 
-1. On your Sharepoint server, create a destination directory
+1. On your SharePoint server, create a destination directory
 2. On your DSS project flow, create a SharePoint folder by pressing **Dataset > Folder** and selecting the **SharePoint Server Shared Documents** plugin as **Store into** parameter
 3. You will get a red error box at this stage. You need to go to the Settings tab and set the correct type of authentication and connection. Once this is done, type "/" in the path window and press then **Browse**. Navigate to the destination directory created on step 1 and press ok.
 4. In your DSS flow, pick the dataset you want to export back to SharePoint, and select the **Export to folder** recipe. In the Export Recipe window, click on **Use existing** and pick the folder you created in steps 2-3. You can change the file format to you liking.
