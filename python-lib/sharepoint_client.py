@@ -6,6 +6,7 @@ from requests_ntlm import HttpNtlmAuth
 
 from sharepoint_constants import SharePointConstants
 from dss_constants import DSSConstants
+from common import get_from_json_path
 
 
 class SharePointClient():
@@ -375,7 +376,7 @@ class LocalSharePointSession():
         self.assert_response_ok(response)
         try:
             json_response = response.json()
-            return json_response.get("d").get("GetContextWebInformation").get("FormDigestValue")
+            return get_from_json_path(["d", "GetContextWebInformation", "FormDigestValue"], json_response)
         except ValueError:
             return None
         except KeyError:
