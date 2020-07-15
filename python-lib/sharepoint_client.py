@@ -11,6 +11,7 @@ from dss_constants import DSSConstants
 class SharePointClient():
 
     def __init__(self, config):
+        print("SharePointClient:1.0.2b2")
         self.sharepoint_site = None
         self.sharepoint_root = None
         login_details = config.get('sharepoint_local')
@@ -109,7 +110,7 @@ class SharePointClient():
             self.get_file_url(full_path),
             headers=headers
         )
-        self.assert_response_ok(response)
+        self.assert_response_ok(response, no_json=True)
 
     def delete_folder(self, full_path):
         headers = {
@@ -303,12 +304,14 @@ class SharePointSession():
         self.sharepoint_site = sharepoint_site
         self.sharepoint_access_token = sharepoint_access_token
 
-    def get(self, url, headers={}):
+    def get(self, url, headers=None):
+        headers = {} if headers is None else headers
         headers["accept"] = DSSConstants.APPLICATION_JSON
         headers["Authorization"] = self.get_authorization_bearer()
         return requests.get(url, headers=headers)
 
-    def post(self, url, headers={}, json=None, data=None):
+    def post(self, url, headers=None, json=None, data=None):
+        headers = {} if headers is None else headers
         headers["accept"] = DSSConstants.APPLICATION_JSON
         headers["Authorization"] = self.get_authorization_bearer()
         return requests.post(url, headers=headers, json=json, data=data)
@@ -329,7 +332,8 @@ class LocalSharePointSession():
         self.sharepoint_password = sharepoint_password
         self.auth = HttpNtlmAuth(sharepoint_user_name, sharepoint_password)
 
-    def get(self, url, headers={}):
+    def get(self, url, headers=None):
+        headers = {} if headers is None else headers
         headers["accept"] = DSSConstants.APPLICATION_JSON
         args = {
             "headers": headers,
@@ -339,9 +343,12 @@ class LocalSharePointSession():
             args["verify"] = False
         return requests.get(url, **args)
 
-    def post(self, url, headers={}, json=None, data=None):
+    def post(self, url, headers=None, json=None, data=None):
+        headers = {} if headers is None else headers
         headers["accept"] = DSSConstants.APPLICATION_JSON
-        headers["X-RequestDigest"] = self.get_form_digest_value()
+        form_digest_value = self.get_form_digest_value()
+        if form_digest_value is not None:
+            headers["X-RequestDigest"] = form_digest_value
         args = {
             "headers": headers,
             "json": json,
@@ -356,14 +363,33 @@ class LocalSharePointSession():
         if self.form_digest_value is not None:
             return self.form_digest_value
         headers = {}
-        headers["accept"] = DSSConstants.APPLICATION_JSON_NOMETADATA
-        response = requests.post(self.get_context_info_url(), headers=headers, auth=self.auth)
-        json_response = response.json()
-        if SharePointConstants.FORM_DIGEST_VALUE in json_response:
-            self.form_digest_value = json_response[SharePointConstants.FORM_DIGEST_VALUE]
-            return self.form_digest_value
+        headers["accept"] = DSSConstants.APPLICATION_JSON
+        args = {
+            "headers": headers,
+            "auth": self.auth
+        }
+        if self.ignore_ssl_check is True:
+            args["verify"] = False
+        response = requests.post(self.get_context_info_url(), **args)
+        print("get_form_digest_value:status={}:content={}".format(response.status_code, response.content))
+        self.assert_response_ok(response)
+        try:
+            json_response = response.json()
+            return json_response.get("d").get("GetContextWebInformation").get("FormDigestValue")
+        except ValueError:
+            return None
+        except KeyError:
+            return None
+        return None
 
     def get_context_info_url(self):
         return "{}/{}/_api/contextinfo".format(
             self.sharepoint_origin, self.sharepoint_site
         )
+
+    def assert_response_ok(self, response):
+        if response.status_code >= 400:
+            raise Exception("Error {} : {}".format(
+                response.status_code,
+                response.content
+            ))
