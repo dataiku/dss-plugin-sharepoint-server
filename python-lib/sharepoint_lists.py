@@ -36,6 +36,19 @@ def matched_item(column_ids, column_names, item):
     return ret
 
 
+def expand_matched_item(column_ids, column_names, item, column_to_expand=None):
+    ret = {}
+    for key, value in item.items():
+        if key in column_ids:
+            name = column_names[key]
+            key_to_return = column_to_expand.get(key)
+            if key_to_return:
+                ret[name] = value.get(key_to_return)
+            else:
+                ret[name] = value
+    return ret
+
+
 def is_error(response):
     return _has_error(response) and _has_message(response) and _has_value(response)
 
