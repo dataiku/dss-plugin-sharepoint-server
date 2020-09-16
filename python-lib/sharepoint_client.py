@@ -1,6 +1,7 @@
 import os
 import requests
 import urllib.parse
+import logging
 
 from requests_ntlm import HttpNtlmAuth
 
@@ -8,11 +9,15 @@ from sharepoint_constants import SharePointConstants
 from dss_constants import DSSConstants
 from common import get_from_json_path
 
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO,
+                    format='sharepoint-online plugin %(levelname)s - %(message)s')
+
 
 class SharePointClient():
 
     def __init__(self, config):
-        print("SharePointClient:1.0.2b2")
+        logger.info("SharePointClient:1.0.3")
         self.sharepoint_site = None
         self.sharepoint_root = None
         login_details = config.get('sharepoint_local')
@@ -391,7 +396,6 @@ class LocalSharePointSession():
         if self.ignore_ssl_check is True:
             args["verify"] = False
         response = requests.post(self.get_context_info_url(), **args)
-        print("get_form_digest_value:status={}:content={}".format(response.status_code, response.content))
         self.assert_response_ok(response)
         try:
             json_response = response.json()

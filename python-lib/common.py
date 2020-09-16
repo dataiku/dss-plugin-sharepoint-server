@@ -13,9 +13,10 @@ def get_lnt_path(path):
 
 
 def get_from_json_path(path, json_object):
-    edge = json_object
+    # Given a array of nested fields, navigate to the terminal field and extract the value.
+    node = json_object
     for element in path:
-        edge = edge.get(element, None)
-        if edge is None:
+        node = node.get(element, None)
+        if node is None:
             return None
-    return edge
+    return node
