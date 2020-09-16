@@ -17,3 +17,14 @@ class DSSConstants(object):
         "sharepoint_host": "The SharePoint host address is missing",
         "sharepoint_site": "The site name is missing"
     }
+    TYPES = {
+        "string": "Text",
+        "double": "Number",
+        "float": "Number",
+        "int": "Integer",
+        "bigint": "Integer",
+        "smallint": "Integer",
+        "tinyint": "Integer",
+        "date": "DateTime"
+    }
+    FALLBACK_TYPE = "string"

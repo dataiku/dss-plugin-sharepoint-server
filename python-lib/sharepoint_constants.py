@@ -5,6 +5,8 @@ class SharePointConstants(object):
     ENTITY_PROPERTY_NAME = 'EntityPropertyName'
     NAME_COLUMN = 'name'
     TYPE_COLUMN = 'type'
+    STATIC_NAME = 'StaticName'
+    LOOKUP_FIELD = 'LookupField'
     COMMENT_COLUMN = 'comment'
     COLUMNS = 'columns'
     TYPE_AS_STRING = 'TypeAsString'
@@ -29,5 +31,6 @@ class SharePointConstants(object):
         "Computed": None,
         "Attachments": None
     }
+    FALLBACK_TYPE = "Text"
     TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
     GET_FOLDER_URL_STRUCTURE = "{0}/{1}/_api/Web/GetFolderByServerRelativeUrl('/{1}/{2}{3}')"
