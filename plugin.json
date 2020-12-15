@@ -1,6 +1,6 @@
 {
     "id": "sharepoint-server",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "meta": {
         "label": "SharePoint Server",
         "description": "Read and write data from/to your SharePoint server",
@@ -10,7 +10,7 @@
             "Microsoft",
             "Connector"
         ],
-        "url": "https://www.dataiku.com/product/plugins/sharepoint-server/",
+        "url": "https://github.com/dataiku/dss-plugin-sharepoint-server",
         "licenseInfo": "Apache Software License",
         "supportLevel": "NOT_SUPPORTED"
     }

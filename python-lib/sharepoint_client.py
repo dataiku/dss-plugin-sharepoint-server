@@ -14,6 +14,10 @@ logging.basicConfig(level=logging.INFO,
                     format='sharepoint-online plugin %(levelname)s - %(message)s')
 
 
+class SharePointClientError(ValueError):
+    pass
+
+
 class SharePointClient():
 
     def __init__(self, config):
@@ -296,28 +300,28 @@ class SharePointClient():
 
     def assert_login_details(self, required_keys, login_details):
         if login_details is None or login_details == {}:
-            raise Exception("Login details are empty")
+            raise SharePointClientError("Login details are empty")
         for key in required_keys:
             if key not in login_details.keys():
-                raise Exception(required_keys[key])
+                raise SharePointClientError(required_keys[key])
 
     def assert_response_ok(self, response, no_json=False):
         status_code = response.status_code
         if status_code == 400:
-            raise Exception("{}".format(response.text))
+            raise SharePointClientError("{}".format(response.text))
         if status_code == 404:
-            raise Exception("Not found. Please check tenant, site type or site name.")
+            raise SharePointClientError("Not found. Please check tenant, site type or site name.")
         if status_code == 403:
-            raise Exception("Forbidden. Please check your account credentials.")
+            raise SharePointClientError("Forbidden. Please check your account credentials.")
         if not no_json:
             if len(response.content) == 0:
-                raise Exception("Empty response from SharePoint. Please check user credentials.")
+                raise SharePointClientError("Empty response from SharePoint. Please check user credentials.")
             json_response = response.json()
             if "error" in json_response:
                 if "message" in json_response["error"] and "value" in json_response["error"]["message"]:
-                    raise Exception("Error: {}".format(json_response["error"]["message"]["value"]))
+                    raise SharePointClientError("Error: {}".format(json_response["error"]["message"]["value"]))
                 else:
-                    raise Exception("Error")
+                    raise SharePointClientError("Error")
 
 
 class SharePointSession():
@@ -413,7 +417,7 @@ class LocalSharePointSession():
 
     def assert_response_ok(self, response):
         if response.status_code >= 400:
-            raise Exception("Error {} : {}".format(
+            raise SharePointClientError("Error {} : {}".format(
                 response.status_code,
                 response.content
             ))
