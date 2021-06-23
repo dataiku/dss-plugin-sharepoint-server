@@ -24,7 +24,7 @@ def get_sharepoint_type(dss_type):
     return DSSConstants.TYPES.get(dss_type, SharePointConstants.FALLBACK_TYPE)
 
 
-def matched_item(column_ids, column_names, item):
+def matched_item(column_ids, column_names, item, column_to_expand=None):
     ret = {}
     for key, value in item.items():
         if key in column_ids:
@@ -64,6 +64,9 @@ def _has_value(response):
 
 
 def assert_list_title(list_title):
+    """ Asserts that the list title does not contain any character forbidden by the list creation API call """
+    """ (currently just '?') """
+
     if "?" in list_title:
         raise ValueError("The list title contains a '?' characters")
 

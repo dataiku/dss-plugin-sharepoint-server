@@ -387,11 +387,11 @@ class SharePointSession():
         self.sharepoint_site = sharepoint_site
         self.sharepoint_access_token = sharepoint_access_token
 
-    def get(self, url, headers=None):
+    def get(self, url, headers=None, params=None):
         headers = {} if headers is None else headers
         headers["accept"] = DSSConstants.APPLICATION_JSON
         headers["Authorization"] = self.get_authorization_bearer()
-        return requests.get(url, headers=headers)
+        return requests.get(url, headers=headers, params=params)
 
     def post(self, url, headers=None, json=None, data=None):
         headers = {} if headers is None else headers
