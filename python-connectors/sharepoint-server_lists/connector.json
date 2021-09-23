@@ -16,6 +16,7 @@
         {
             "name": "sharepoint_list_title",
             "label": "List title",
+            "defaultValue":  "DSS_${projectKey}_",
             "description": "(A-Z, a-z, 0-9)",
             "type": "STRING",
             "mandatory": true
@@ -27,6 +28,33 @@
             "type": "BOOLEAN",
             "defaultValue": false,
             "mandatory": true
+        },
+        {
+            "name": "metadata_to_retrieve",
+            "label": "Metadata to retrieve",
+            "type": "MULTISELECT",
+            "selectChoices": [
+                {
+                    "value": "ID",
+                    "label": "Item's ID"
+                },
+                {
+                    "value": "Created",
+                    "label": "Creation date"
+                },
+                {
+                    "value": "Modified",
+                    "label": "Modification date"
+                },
+                {
+                    "value": "Author",
+                    "label": "Created by"
+                },
+                {
+                    "value": "Editor",
+                    "label": "Modified by"
+                }
+            ]
         }
     ]
 }

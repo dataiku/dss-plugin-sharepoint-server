@@ -3,6 +3,7 @@ class SharePointConstants(object):
     READ_ONLY_FIELD = 'ReadOnlyField'
     TITLE_COLUMN = 'Title'
     ENTITY_PROPERTY_NAME = 'EntityPropertyName'
+    EXPENDABLES_FIELDS = {"Author": "Title", "Editor": "Title"}
     NAME_COLUMN = 'name'
     TYPE_COLUMN = 'type'
     STATIC_NAME = 'StaticName'
@@ -29,7 +30,8 @@ class SharePointConstants(object):
         "URL": "object",
         "Location": "object",
         "Computed": None,
-        "Attachments": None
+        "Attachments": None,
+        "Calculated": "string"
     }
     FALLBACK_TYPE = "Text"
     TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
