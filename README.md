@@ -5,6 +5,10 @@ This Dataiku DSS plugin provides a read / write connector to interact with docum
 ### Licence
 This plugin is distributed under the Apache License version 2.0
 
+## Installation
+
+It is recommended to use v1.0.2 of the plugin for DSS 11 and below, and v1.0.3 for DSS 12 and above. In any case, do not use python higher than 3.6 with DSS 11 for the code env creation.
+
 ## How to set up
 
 - In DSS, go to **Plugins > Installed > SharePoint > Settings > SharePoint 2016 login**. There, fill in the details of the SharePoint instance you are trying to sync with DSS.
